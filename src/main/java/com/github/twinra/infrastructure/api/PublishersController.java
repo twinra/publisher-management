@@ -1,7 +1,8 @@
-package com.github.twinra.api;
+package com.github.twinra.infrastructure.api;
 
 import com.github.twinra.domain.model.Publisher;
-import com.github.twinra.domain.services.PublishersService;
+import com.github.twinra.domain.ports.provided.PublishersModifier;
+import com.github.twinra.domain.ports.provided.PublishersReader;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -13,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/publishers", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "Publishers")
 public class PublishersController {
-    private final PublishersService service;
+    private final PublishersReader reader;
+    private final PublishersModifier modifier;
     private final PublisherDtoValidator validator;
 
     @InitBinder
@@ -31,12 +32,12 @@ public class PublishersController {
 
     @GetMapping
     public List<PublisherDto> getAll() {
-        return service.getAll().stream().map(PublisherDto::fromDomainObject).collect(Collectors.toList());
+        return reader.getAll().stream().map(PublisherDto::fromDomainObject).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PublisherDto> getById(@PathVariable long id) {
-        return service.getById(id)
+        return reader.getById(new Publisher.Id(id))
                 .map(PublisherDto::fromDomainObject)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -44,30 +45,24 @@ public class PublishersController {
 
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody PublisherDto dto) {
-        Publisher saved = service.save(dto.toDomainObject());
-        URI savedURI = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + saved.getId()).build().toUri();
+        Publisher.Id savedId = modifier.create(dto.toDomainObject());
+        URI savedURI = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + savedId.getValue()).build().toUri();
         return ResponseEntity.created(savedURI).build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable long id, @Valid @RequestBody PublisherDto dto) {
-        Optional<Publisher> found = service.getById(id);
-        if(found.isEmpty())
-            return ResponseEntity.notFound().build();
-        else {
-            service.save(dto.toDomainObject(id));
-            return ResponseEntity.noContent().build();
-        }
+        boolean updated = modifier.update(new Publisher.Id(id), dto.toDomainObject());
+        return updated
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        Optional<Publisher> found = service.getById(id);
-        if(found.isEmpty())
-            return ResponseEntity.notFound().build();
-        else {
-            service.delete(found.get());
-            return ResponseEntity.noContent().build();
-        }
+        boolean deleted = modifier.deleteById(new Publisher.Id(id));
+        return deleted
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

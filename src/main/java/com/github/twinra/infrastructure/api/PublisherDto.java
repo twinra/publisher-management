@@ -1,4 +1,4 @@
-package com.github.twinra.api;
+package com.github.twinra.infrastructure.api;
 
 import com.github.twinra.domain.model.Publisher;
 import lombok.AllArgsConstructor;
@@ -18,14 +18,10 @@ public class PublisherDto {
     private String email;
 
     public Publisher toDomainObject() {
-        return new Publisher(this.id, this.name, this.email);
-    }
-
-    public Publisher toDomainObject(long id) {
-        return new Publisher(id, this.name, this.email);
+        return new Publisher(null, name, email);
     }
 
     public static PublisherDto fromDomainObject(Publisher publisher) {
-        return new PublisherDto(publisher.getId(), publisher.getName(), publisher.getEmail());
+        return new PublisherDto(publisher.getId().getValue(), publisher.getName(), publisher.getEmail());
     }
 }

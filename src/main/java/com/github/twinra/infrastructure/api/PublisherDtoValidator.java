@@ -1,4 +1,4 @@
-package com.github.twinra.api;
+package com.github.twinra.infrastructure.api;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -15,7 +15,7 @@ public class PublisherDtoValidator implements Validator {
     public void validate(Object o, Errors errors) {
         PublisherDto dto = (PublisherDto) o;
 
-        if(!isValidEmail(dto.getEmail()))
+        if (!isValidEmail(dto.getEmail()))
             errors.rejectValue("email", "INVALID_EMAIL");
     }
 

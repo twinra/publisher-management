@@ -4,6 +4,7 @@ API provides functionality to manage publishers and books they offer
 
 Endpoints
 --------
+
 | Method | URL                               | Description                        |
 |--------|-----------------------------------|------------------------------------|
 | GET    | /publishers                       | get all publishers                 |
@@ -18,22 +19,27 @@ Endpoints
 | GET    | /books                            | get all books                      |
 | GET    | /books/{isbn}                     | get book by isbn                   |
 
-Open tasks:
+Open tasks
+----------
+
 * business logic:
-  * implement endpoints for books
-  * delete all publisher's books on deletion
-  * implement validation:
-    * return error message if validation failed 
-    * publisher name must be unique
-    * every book must belong to signe publisher
-    * implement validator for emails
-  * implement persistence layer:
-    * JPA repositories for RDB
-    * create sql scripts for initial data population
-    * modification (create, update, delete) should use optimistic locking and be transactional
+    * implement endpoints for books
+    * delete all publisher's books on deletion
+    * implement validation:
+        * return error message if validation failed
+        * publisher name must be unique
+        * every book must belong to signe publisher
+        * implement validator for emails
+    * implement persistence layer:
+        * JPA repositories for RDB
+        * create sql scripts for initial data population
+        * modification (create, update, delete) should be transactional
+        * modification (create, update, delete) should use optimistic locking
 * features:
-  * add pagination for endpoints returning collection of resources (GET /publisher, GET /books...)
-  * add filters for endpoints returning collection of resources (GET /publisher, GET /books...)
-  * move swagger config constants to yaml file
-  * security with JWT
-  * hateoas
+    * add pagination for endpoints returning collection of resources (GET /publisher, GET /books...)
+    * add filters for endpoints returning collection of resources (GET /publisher, GET /books...)
+    * move swagger config constants to yaml file
+    * security with JWT
+    * hateoas
+* ideas:
+  * use dedicated objects for create/update operations, like PublihserModificationRequest

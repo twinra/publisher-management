@@ -1,11 +1,19 @@
 package com.github.twinra.domain.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 public class Publisher {
-    private final Long id;
+    private final Id id;
     private final String name;
     private final String email;
+
+    public Publisher withId(Id id) {
+        return new Publisher(id, this.name, this.email);
+    }
+
+    @Data
+    public static class Id {
+        private final long value;
+    }
 }
