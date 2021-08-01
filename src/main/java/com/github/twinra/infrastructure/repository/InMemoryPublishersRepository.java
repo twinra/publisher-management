@@ -1,6 +1,6 @@
 package com.github.twinra.infrastructure.repository;
 
-import com.github.twinra.domain.gateways.PublishersGateway;
+import com.github.twinra.domain.gateway.PublishersGateway;
 import com.github.twinra.domain.model.Publisher;
 import org.springframework.stereotype.Repository;
 

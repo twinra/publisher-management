@@ -1,4 +1,4 @@
-package com.github.twinra.domain.actions;
+package com.github.twinra.domain.action;
 
 import com.github.twinra.domain.model.Publisher;
 

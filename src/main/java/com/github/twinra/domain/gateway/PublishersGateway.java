@@ -1,4 +1,4 @@
-package com.github.twinra.domain.gateways;
+package com.github.twinra.domain.gateway;
 
 import com.github.twinra.domain.model.Publisher;
 

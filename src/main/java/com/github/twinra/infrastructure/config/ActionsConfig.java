@@ -1,8 +1,8 @@
 package com.github.twinra.infrastructure.config;
 
-import com.github.twinra.domain.actions.SearchPublishers;
-import com.github.twinra.domain.actions.UpdatePublishers;
-import com.github.twinra.domain.gateways.PublishersGateway;
+import com.github.twinra.domain.action.SearchPublishers;
+import com.github.twinra.domain.action.UpdatePublishers;
+import com.github.twinra.domain.gateway.PublishersGateway;
 import com.github.twinra.domain.service.ActionsFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,6 @@
 package com.github.twinra.domain.action;
 
-import com.github.twinra.domain.actions.UpdatePublishers;
-import com.github.twinra.domain.gateways.PublishersGateway;
+import com.github.twinra.domain.gateway.PublishersGateway;
 import com.github.twinra.domain.model.Publisher;
 import com.github.twinra.domain.service.ActionsFactory;
 import org.junit.jupiter.api.BeforeEach;

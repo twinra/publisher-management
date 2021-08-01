@@ -1,7 +1,7 @@
 package com.github.twinra.infrastructure.api;
 
-import com.github.twinra.domain.actions.SearchPublishers;
-import com.github.twinra.domain.actions.UpdatePublishers;
+import com.github.twinra.domain.action.SearchPublishers;
+import com.github.twinra.domain.action.UpdatePublishers;
 import com.github.twinra.domain.model.Publisher;
 import com.github.twinra.infrastructure.api.dto.CreatePublisherDto;
 import com.github.twinra.infrastructure.api.dto.PublisherDto;
