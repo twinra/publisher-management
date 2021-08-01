@@ -19,17 +19,17 @@ Endpoints
 | GET    | /books                            | get all books                      |
 | GET    | /books/{isbn}                     | get book by isbn                   |
 
-Open tasks
+TODOs
 ----------
 
 * business logic:
-    * implement endpoints for books
-    * delete all publisher's books on deletion
-    * implement validation:
+    * add use cases for books
+    * delete all publisher's books on its deletion
+    * add validation:
         * return error message if validation failed
+        * email address must be valid
         * publisher name must be unique
-        * every book must belong to signe publisher
-        * implement validator for emails
+        * every book must belong to single publisher
     * implement persistence layer:
         * JPA repositories for RDB
         * create sql scripts for initial data population
@@ -41,5 +41,3 @@ Open tasks
     * move swagger config constants to yaml file
     * security with JWT
     * hateoas
-* ideas:
-  * use dedicated objects for create/update operations, like PublihserModificationRequest

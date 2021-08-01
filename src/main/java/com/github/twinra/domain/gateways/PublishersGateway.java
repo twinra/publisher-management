@@ -1,12 +1,12 @@
-package com.github.twinra.domain.ports.required;
+package com.github.twinra.domain.gateways;
 
 import com.github.twinra.domain.model.Publisher;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface PublishersGateway {
-    Set<Publisher> getAll();
+    List<Publisher> getAll();
 
     boolean existsById(Publisher.Id id);
 

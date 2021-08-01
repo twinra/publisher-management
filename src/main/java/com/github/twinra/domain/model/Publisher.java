@@ -16,4 +16,15 @@ public class Publisher {
     public static class Id {
         private final long value;
     }
+
+    @Data
+    public static class CreateRequest {
+        private final String name;
+        private final String email;
+    }
+
+    @Data
+    public static class UpdateRequest {
+        private final String email;
+    }
 }

@@ -1,28 +1,29 @@
 package com.github.twinra.infrastructure.repository;
 
+import com.github.twinra.domain.gateways.PublishersGateway;
 import com.github.twinra.domain.model.Publisher;
-import com.github.twinra.domain.ports.required.PublishersGateway;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Repository
-public class PublishersRepository implements PublishersGateway {
+public class InMemoryPublishersRepository implements PublishersGateway {
     private static final int ID_INITIAL_VALUE = 0;
     private static final int ID_INCREMENT = 1;
-    private final Map<Publisher.Id, Publisher> publishersById = Set.of(
-            new Publisher(new Publisher.Id(11), "ABC", "admin@abc.com"),
-            new Publisher(new Publisher.Id(22), "XYZ", "xyz@xyz.org"),
-            new Publisher(new Publisher.Id(33), "QWERTY", "asdfgh@qwerty.io")
-    ).stream().collect(Collectors.toMap(Publisher::getId, p -> p));
+    private final Map<Publisher.Id, Publisher> publishersById = new HashMap<>();
+
+    public InMemoryPublishersRepository() {
+        Stream.of(
+                new Publisher(new Publisher.Id(11), "ABC", "admin@abc.com"),
+                new Publisher(new Publisher.Id(22), "XYZ", "xyz@xyz.org"),
+                new Publisher(new Publisher.Id(33), "QWERTY", "asdfgh@qwerty.io")
+        ).forEach(this::save);
+    }
 
     @Override
-    public Set<Publisher> getAll() {
-        return new HashSet<>(publishersById.values());
+    public List<Publisher> getAll() {
+        return new LinkedList<>(publishersById.values());
     }
 
     @Override
@@ -50,7 +51,7 @@ public class PublishersRepository implements PublishersGateway {
 
     private Publisher.Id generateNewId() {
         long nextId = publishersById.keySet().stream()
-                .mapToLong(id -> id.getValue())
+                .mapToLong(Publisher.Id::getValue)
                 .max().orElse(ID_INITIAL_VALUE) + ID_INCREMENT;
         return new Publisher.Id(nextId);
     }

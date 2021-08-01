@@ -1,8 +1,11 @@
 package com.github.twinra.infrastructure.api;
 
+import com.github.twinra.domain.actions.SearchPublishers;
+import com.github.twinra.domain.actions.UpdatePublishers;
 import com.github.twinra.domain.model.Publisher;
-import com.github.twinra.domain.ports.provided.PublishersModifier;
-import com.github.twinra.domain.ports.provided.PublishersReader;
+import com.github.twinra.infrastructure.api.dto.CreatePublisherDto;
+import com.github.twinra.infrastructure.api.dto.PublisherDto;
+import com.github.twinra.infrastructure.api.dto.UpdatePublisherDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,10 +35,10 @@ class PublishersControllerTest {
     PublishersController controller;
 
     @Mock
-    PublishersReader reader;
+    SearchPublishers reader;
 
     @Mock
-    PublishersModifier modifier;
+    UpdatePublishers modifier;
 
     private long id;
 
@@ -53,11 +55,11 @@ class PublishersControllerTest {
 
     @Test
     void getAll_returnsPublishers_providedByReader() {
-        Set<Publisher> publishers = Set.of(
+        List<Publisher> publishers = List.of(
                 new Publisher(new Publisher.Id(123), "NAME", "EMAIL"),
                 new Publisher(new Publisher.Id(456), "ANOTHER_NAME", "ANOTHER_EMAIL")
         );
-        when(reader.getAll()).thenReturn(publishers);
+        when(reader.findAll()).thenReturn(publishers);
 
         //when
         List<PublisherDto> response = controller.getAll();
@@ -69,7 +71,7 @@ class PublishersControllerTest {
     @Test
     void getById_returnsPublisher_foundByReader() {
         Publisher foundPublisher = new Publisher(new Publisher.Id(id), "ACME", "noreply@acme.com");
-        when(reader.getById(foundPublisher.getId())).thenReturn(Optional.of(foundPublisher));
+        when(reader.findById(foundPublisher.getId())).thenReturn(Optional.of(foundPublisher));
 
         //when
         ResponseEntity<PublisherDto> response = controller.getById(id);
@@ -86,7 +88,7 @@ class PublishersControllerTest {
     @Test
     public void getById_respondsNotFound_ifReaderFindsNothing() {
         Publisher.Id publisherId = new Publisher.Id(id);
-        when(reader.getById(publisherId)).thenReturn(Optional.empty());
+        when(reader.findById(publisherId)).thenReturn(Optional.empty());
 
         //when
         ResponseEntity<PublisherDto> response = controller.getById(id);
@@ -98,10 +100,10 @@ class PublishersControllerTest {
 
     @Test
     void create_returnsId_providedByModifier() {
-        PublisherDto dto = new PublisherDto(null, "NAME", "EMAIL");
+        CreatePublisherDto dto = new CreatePublisherDto("NAME", "EMAIL");
         Publisher.Id publisherId = new Publisher.Id(id);
 
-        when(modifier.create(any(Publisher.class))).thenReturn(publisherId);
+        when(modifier.create(any(Publisher.CreateRequest.class))).thenReturn(publisherId);
 
         //when
         ResponseEntity<Void> response = controller.create(dto);
@@ -114,9 +116,9 @@ class PublishersControllerTest {
 
     @Test
     void update_respondsNotFound_ifModifierDidNotFindObjectToUpdate() {
-        PublisherDto dto = new PublisherDto(null, "AAA", "aaa@aaa.aaa");
+        UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
 
-        when(modifier.update(eq(new Publisher.Id(id)), any(Publisher.class))).thenReturn(false);
+        when(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).thenReturn(false);
 
         //when
         ResponseEntity<Void> response = controller.update(id, dto);
@@ -128,9 +130,9 @@ class PublishersControllerTest {
 
     @Test
     void update_respondsNoContent_ifModifierHasFoundObjectToUpdate() {
-        PublisherDto dto = new PublisherDto(null, "AAA", "aaa@aaa.aaa");
+        UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
 
-        when(modifier.update(eq(new Publisher.Id(id)), any(Publisher.class))).thenReturn(true);
+        when(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).thenReturn(true);
 
         //when
         ResponseEntity<Void> response = controller.update(id, dto);
@@ -142,7 +144,7 @@ class PublishersControllerTest {
 
     @Test
     void deleteById_respondsNotFound_ifModifierDidNotFindObjectToDelete() {
-        when(modifier.deleteById(new Publisher.Id(id))).thenReturn(false);
+        when(modifier.delete(new Publisher.Id(id))).thenReturn(false);
 
         //when
         ResponseEntity<Void> response = controller.delete(id);
@@ -155,7 +157,7 @@ class PublishersControllerTest {
 
     @Test
     void deleteById_respondsNoContent_ifModifierHasFoundObjectToDelete() {
-        when(modifier.deleteById(new Publisher.Id(id))).thenReturn(true);
+        when(modifier.delete(new Publisher.Id(id))).thenReturn(true);
 
         //when
         ResponseEntity<Void> response = controller.delete(id);
