@@ -26,7 +26,7 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class PublishersControllerTest {
@@ -59,7 +59,7 @@ class PublishersControllerTest {
                 new Publisher(new Publisher.Id(123), "NAME", "EMAIL"),
                 new Publisher(new Publisher.Id(456), "ANOTHER_NAME", "ANOTHER_EMAIL")
         );
-        when(reader.findAll()).thenReturn(publishers);
+        given(reader.findAll()).willReturn(publishers);
 
         //when
         List<PublisherDto> response = controller.getAll();
@@ -71,7 +71,7 @@ class PublishersControllerTest {
     @Test
     void getById_returnsPublisher_foundByReader() {
         Publisher foundPublisher = new Publisher(new Publisher.Id(id), "ACME", "noreply@acme.com");
-        when(reader.findById(foundPublisher.getId())).thenReturn(Optional.of(foundPublisher));
+        given(reader.findById(foundPublisher.getId())).willReturn(Optional.of(foundPublisher));
 
         //when
         ResponseEntity<PublisherDto> response = controller.getById(id);
@@ -88,7 +88,7 @@ class PublishersControllerTest {
     @Test
     public void getById_respondsNotFound_ifReaderFindsNothing() {
         Publisher.Id publisherId = new Publisher.Id(id);
-        when(reader.findById(publisherId)).thenReturn(Optional.empty());
+        given(reader.findById(publisherId)).willReturn(Optional.empty());
 
         //when
         ResponseEntity<PublisherDto> response = controller.getById(id);
@@ -103,7 +103,7 @@ class PublishersControllerTest {
         CreatePublisherDto dto = new CreatePublisherDto("NAME", "EMAIL");
         Publisher.Id publisherId = new Publisher.Id(id);
 
-        when(modifier.create(any(Publisher.CreateRequest.class))).thenReturn(publisherId);
+        given(modifier.create(any(Publisher.CreateRequest.class))).willReturn(publisherId);
 
         //when
         ResponseEntity<Void> response = controller.create(dto);
@@ -118,7 +118,7 @@ class PublishersControllerTest {
     void update_respondsNotFound_ifModifierDidNotFindObjectToUpdate() {
         UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
 
-        when(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).thenReturn(false);
+        given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).willReturn(false);
 
         //when
         ResponseEntity<Void> response = controller.update(id, dto);
@@ -132,7 +132,7 @@ class PublishersControllerTest {
     void update_respondsNoContent_ifModifierHasFoundObjectToUpdate() {
         UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
 
-        when(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).thenReturn(true);
+        given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).willReturn(true);
 
         //when
         ResponseEntity<Void> response = controller.update(id, dto);
@@ -144,7 +144,7 @@ class PublishersControllerTest {
 
     @Test
     void deleteById_respondsNotFound_ifModifierDidNotFindObjectToDelete() {
-        when(modifier.delete(new Publisher.Id(id))).thenReturn(false);
+        given(modifier.delete(new Publisher.Id(id))).willReturn(false);
 
         //when
         ResponseEntity<Void> response = controller.delete(id);
@@ -157,7 +157,7 @@ class PublishersControllerTest {
 
     @Test
     void deleteById_respondsNoContent_ifModifierHasFoundObjectToDelete() {
-        when(modifier.delete(new Publisher.Id(id))).thenReturn(true);
+        given(modifier.delete(new Publisher.Id(id))).willReturn(true);
 
         //when
         ResponseEntity<Void> response = controller.delete(id);

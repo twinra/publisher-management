@@ -38,9 +38,9 @@ public class InMemoryPublishersRepository implements PublishersGateway {
 
     @Override
     public Publisher save(Publisher publisher) {
-        Publisher.Id id = Optional.ofNullable(publisher.getId()).orElseGet(this::generateNewId);
-        publishersById.put(id, publisher.withId(id));
-        return publishersById.get(id);
+        Publisher toSave = generateIdIfEmpty(publisher);
+        publishersById.put(toSave.getId(), toSave);
+        return publishersById.get(toSave.getId());
     }
 
     @Override
@@ -54,5 +54,11 @@ public class InMemoryPublishersRepository implements PublishersGateway {
                 .mapToLong(Publisher.Id::getValue)
                 .max().orElse(ID_INITIAL_VALUE) + ID_INCREMENT;
         return new Publisher.Id(nextId);
+    }
+
+    private Publisher generateIdIfEmpty(Publisher publisher) {
+        return publisher.getId() == null
+                ? new Publisher(generateNewId(), publisher.getName(), publisher.getEmail())
+                : publisher;
     }
 }
