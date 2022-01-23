@@ -33,7 +33,7 @@ public class UpdatePublishersTest {
 
     @Test
     void create_savesPublisherWithPassedParameters() {
-        Publisher.CreateRequest request = new Publisher.CreateRequest("NAME", "EMAIL");
+        Publisher.Create request = new Publisher.Create("NAME", "EMAIL");
 
         given(gateway.save(any(Publisher.class))).willReturn(publisherWithId(127));
 
@@ -41,12 +41,12 @@ public class UpdatePublishersTest {
         action.create(request);
 
         //then
-        verify(gateway).save(argThat(publisher -> publisher.getName().equals("NAME") && publisher.getEmail().equals("EMAIL")));
+        verify(gateway).save(argThat(publisher -> publisher.getName().equals("NAME") && publisher.getContacts().equals("EMAIL")));
     }
 
     @Test
     void create_returnsIdSavedInGateway() {
-        Publisher.CreateRequest request = new Publisher.CreateRequest("NAME", "EMAIL");
+        Publisher.Create request = new Publisher.Create("NAME", "EMAIL");
 
         long idValue = 8971263;
         given(gateway.save(any(Publisher.class))).willReturn(publisherWithId(idValue));
@@ -61,7 +61,7 @@ public class UpdatePublishersTest {
 
     @Test
     void update_doesNothing_ifPublisherWithPassedIdDoesNotExist() {
-        Publisher.UpdateRequest request = new Publisher.UpdateRequest("NEW_EMAIL");
+        Publisher.Update request = new Publisher.Update("NEW_EMAIL");
 
         Publisher.Id id = new Publisher.Id(916128);
         given(gateway.getById(id)).willReturn(Optional.empty());
@@ -75,7 +75,7 @@ public class UpdatePublishersTest {
 
     @Test
     void update_modifiesPublisherWithPassedId_ifItExists() {
-        Publisher.UpdateRequest request = new Publisher.UpdateRequest("NEW_EMAIL");
+        Publisher.Update request = new Publisher.Update("NEW_EMAIL");
 
         Publisher.Id id = new Publisher.Id(916128);
         given(gateway.getById(id)).willReturn(Optional.of(new Publisher(id, "NAME", "EMAIL")));
@@ -87,13 +87,13 @@ public class UpdatePublishersTest {
         verify(gateway).save(argThat(publisher ->
                 publisher.getId().equals(id) &&
                 publisher.getName().equals("NAME") &&
-                publisher.getEmail().equals("NEW_EMAIL"))
+                publisher.getContacts().equals("NEW_EMAIL"))
         );
     }
 
     @Test
     void update_returnsFlag_indicatingIfPublisherToUpdateExists() {
-        Publisher.UpdateRequest request = new Publisher.UpdateRequest("NEW_EMAIL");
+        Publisher.Update request = new Publisher.Update("NEW_EMAIL");
 
         Publisher.Id id1 = new Publisher.Id(561253);
         Publisher.Id id2 = new Publisher.Id(428743);

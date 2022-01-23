@@ -12,9 +12,9 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class UpdatePublisherDto {
     @NotNull
-    private String email;
+    private String contacts;
 
-    public Publisher.UpdateRequest toDomainObject() {
-        return new Publisher.UpdateRequest(email);
+    public Publisher.Update toDomainObject() {
+        return new Publisher.Update(contacts);
     }
 }

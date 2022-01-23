@@ -4,6 +4,7 @@ import com.github.twinra.domain.action.SearchPublishers;
 import com.github.twinra.domain.action.UpdatePublishers;
 import com.github.twinra.domain.model.Publisher;
 import com.github.twinra.infrastructure.api.dto.CreatePublisherDto;
+import com.github.twinra.infrastructure.api.dto.DataDto;
 import com.github.twinra.infrastructure.api.dto.PublisherDto;
 import com.github.twinra.infrastructure.api.dto.UpdatePublisherDto;
 import org.junit.jupiter.api.AfterEach;
@@ -62,10 +63,10 @@ class PublishersControllerTest {
         given(reader.findAll()).willReturn(publishers);
 
         //when
-        List<PublisherDto> response = controller.getAll();
+        DataDto<PublisherDto> response = controller.getAll();
 
         //then
-        assertThat(response).hasSize(2).extracting(PublisherDto::getId).contains(123L, 456L);
+        assertThat(response.getData()).hasSize(2).extracting(PublisherDto::getId).contains(123L, 456L);
     }
 
     @Test
@@ -81,7 +82,7 @@ class PublishersControllerTest {
         assertThat(response.getBody()).satisfies(dto -> {
             assertThat(dto.getId()).isEqualTo(foundPublisher.getId().getValue());
             assertThat(dto.getName()).isEqualTo(foundPublisher.getName());
-            assertThat(dto.getEmail()).isEqualTo(foundPublisher.getEmail());
+            assertThat(dto.getContacts()).isEqualTo(foundPublisher.getContacts());
         });
     }
 
@@ -103,7 +104,7 @@ class PublishersControllerTest {
         CreatePublisherDto dto = new CreatePublisherDto("NAME", "EMAIL");
         Publisher.Id publisherId = new Publisher.Id(id);
 
-        given(modifier.create(any(Publisher.CreateRequest.class))).willReturn(publisherId);
+        given(modifier.create(any(Publisher.Create.class))).willReturn(publisherId);
 
         //when
         ResponseEntity<Void> response = controller.create(dto);
@@ -118,7 +119,7 @@ class PublishersControllerTest {
     void update_respondsNotFound_ifModifierDidNotFindObjectToUpdate() {
         UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
 
-        given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).willReturn(false);
+        given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.Update.class))).willReturn(false);
 
         //when
         ResponseEntity<Void> response = controller.update(id, dto);
@@ -132,7 +133,7 @@ class PublishersControllerTest {
     void update_respondsNoContent_ifModifierHasFoundObjectToUpdate() {
         UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
 
-        given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.UpdateRequest.class))).willReturn(true);
+        given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.Update.class))).willReturn(true);
 
         //when
         ResponseEntity<Void> response = controller.update(id, dto);

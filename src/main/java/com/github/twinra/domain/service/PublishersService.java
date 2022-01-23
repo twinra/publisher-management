@@ -24,13 +24,13 @@ class PublishersService implements SearchPublishers, UpdatePublishers {
     }
 
     @Override
-    public Publisher.Id create(Publisher.CreateRequest request) {
+    public Publisher.Id create(Publisher.Create request) {
         Publisher newPublisher = fromCreateRequest(request);
         return gateway.save(newPublisher).getId();
     }
 
     @Override
-    public boolean update(Publisher.Id id, Publisher.UpdateRequest request) {
+    public boolean update(Publisher.Id id, Publisher.Update request) {
         Optional<Publisher> found = gateway.getById(id);
         if (found.isPresent()) {
             Publisher updatedPublisher = fromUpdateRequest(found.get(), request);
@@ -47,12 +47,12 @@ class PublishersService implements SearchPublishers, UpdatePublishers {
         return found;
     }
 
-    private static Publisher fromCreateRequest(Publisher.CreateRequest request) {
-        return new Publisher(null, request.getName(), request.getEmail());
+    private static Publisher fromCreateRequest(Publisher.Create request) {
+        return new Publisher(null, request.getName(), request.getContacts());
     }
 
-    private static Publisher fromUpdateRequest(Publisher publisher, Publisher.UpdateRequest request) {
-        return new Publisher(publisher.getId(), publisher.getName(), request.getEmail());
+    private static Publisher fromUpdateRequest(Publisher publisher, Publisher.Update request) {
+        return new Publisher(publisher.getId(), publisher.getName(), request.getContacts());
     }
 
 }
