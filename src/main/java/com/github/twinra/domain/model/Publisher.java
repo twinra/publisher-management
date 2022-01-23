@@ -6,7 +6,7 @@ import lombok.Data;
 public class Publisher {
     private final Id id;
     private final String name;
-    private final String email;
+    private final String contacts;
 
     @Data
     public static class Id {
@@ -14,13 +14,13 @@ public class Publisher {
     }
 
     @Data
-    public static class CreateRequest {
+    public static class Create {
         private final String name;
-        private final String email;
+        private final String contacts;
     }
 
     @Data
-    public static class UpdateRequest {
-        private final String email;
+    public static class Update {
+        private final String contacts;
     }
 }

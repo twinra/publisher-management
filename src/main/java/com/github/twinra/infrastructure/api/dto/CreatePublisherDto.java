@@ -14,9 +14,9 @@ public class CreatePublisherDto {
     @NotNull
     private String name;
     @NotNull
-    private String email;
+    private String contacts;
 
-    public Publisher.CreateRequest toDomainObject() {
-        return new Publisher.CreateRequest(name, email);
+    public Publisher.Create toDomainObject() {
+        return new Publisher.Create(name, contacts);
     }
 }

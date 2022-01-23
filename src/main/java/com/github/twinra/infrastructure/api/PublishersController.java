@@ -4,6 +4,7 @@ import com.github.twinra.domain.action.SearchPublishers;
 import com.github.twinra.domain.action.UpdatePublishers;
 import com.github.twinra.domain.model.Publisher;
 import com.github.twinra.infrastructure.api.dto.CreatePublisherDto;
+import com.github.twinra.infrastructure.api.dto.DataDto;
 import com.github.twinra.infrastructure.api.dto.PublisherDto;
 import com.github.twinra.infrastructure.api.dto.UpdatePublisherDto;
 import io.swagger.annotations.Api;
@@ -16,7 +17,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,8 +29,11 @@ public class PublishersController {
     private final UpdatePublishers updatePublishers;
 
     @GetMapping
-    public List<PublisherDto> getAll() {
-        return searchPublishers.findAll().stream().map(PublisherDto::fromDomainObject).collect(Collectors.toList());
+    public DataDto<PublisherDto> getAll() {
+        List<PublisherDto> publishers = searchPublishers.findAll().stream()
+                .map(PublisherDto::fromDomainObject)
+                .collect(toList());
+        return new DataDto<>(publishers);
     }
 
     @GetMapping("/{id}")

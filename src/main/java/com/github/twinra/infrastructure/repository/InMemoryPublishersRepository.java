@@ -5,21 +5,12 @@ import com.github.twinra.domain.model.Publisher;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Repository
 public class InMemoryPublishersRepository implements PublishersGateway {
     private static final int ID_INITIAL_VALUE = 0;
     private static final int ID_INCREMENT = 1;
     private final Map<Publisher.Id, Publisher> publishersById = new HashMap<>();
-
-    public InMemoryPublishersRepository() {
-        Stream.of(
-                new Publisher(new Publisher.Id(11), "ABC", "admin@abc.com"),
-                new Publisher(new Publisher.Id(22), "XYZ", "xyz@xyz.org"),
-                new Publisher(new Publisher.Id(33), "QWERTY", "asdfgh@qwerty.io")
-        ).forEach(this::save);
-    }
 
     @Override
     public List<Publisher> getAll() {
@@ -58,7 +49,7 @@ public class InMemoryPublishersRepository implements PublishersGateway {
 
     private Publisher generateIdIfEmpty(Publisher publisher) {
         return publisher.getId() == null
-                ? new Publisher(generateNewId(), publisher.getName(), publisher.getEmail())
+                ? new Publisher(generateNewId(), publisher.getName(), publisher.getContacts())
                 : publisher;
     }
 }
