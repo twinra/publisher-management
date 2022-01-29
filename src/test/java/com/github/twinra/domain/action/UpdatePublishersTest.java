@@ -6,6 +6,7 @@ import com.github.twinra.domain.service.ActionsFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -13,7 +14,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -32,7 +32,7 @@ public class UpdatePublishersTest {
     }
 
     @Test
-    void create_savesPublisherWithPassedParameters() {
+    void create_savesPublisherWithPassedParametersAndActiveStatus() {
         Publisher.Create request = new Publisher.Create("NAME", "EMAIL");
 
         given(gateway.save(any(Publisher.class))).willReturn(publisherWithId(127));
@@ -41,7 +41,13 @@ public class UpdatePublishersTest {
         action.create(request);
 
         //then
-        verify(gateway).save(argThat(publisher -> publisher.getName().equals("NAME") && publisher.getContacts().equals("EMAIL")));
+        ArgumentCaptor<Publisher> captor = ArgumentCaptor.forClass(Publisher.class);
+        verify(gateway).save(captor.capture());
+        assertThat(captor.getValue()).satisfies(publisher -> {
+            assertThat(publisher.getName()).isEqualTo("NAME");
+            assertThat(publisher.getContacts()).isEqualTo("EMAIL");
+            assertThat(publisher.getStatus()).isEqualTo(Publisher.Status.ACTIVE);
+        });
     }
 
     @Test
@@ -61,7 +67,7 @@ public class UpdatePublishersTest {
 
     @Test
     void update_doesNothing_ifPublisherWithPassedIdDoesNotExist() {
-        Publisher.Update request = new Publisher.Update("NEW_EMAIL");
+        Publisher.Update request = new Publisher.Update("NEW_EMAIL", Publisher.Status.ACTIVE);
 
         Publisher.Id id = new Publisher.Id(916128);
         given(gateway.getById(id)).willReturn(Optional.empty());
@@ -75,25 +81,33 @@ public class UpdatePublishersTest {
 
     @Test
     void update_modifiesPublisherWithPassedId_ifItExists() {
-        Publisher.Update request = new Publisher.Update("NEW_EMAIL");
+        Publisher.Update request = new Publisher.Update("NEW_EMAIL", Publisher.Status.INACTIVE);
 
         Publisher.Id id = new Publisher.Id(916128);
-        given(gateway.getById(id)).willReturn(Optional.of(new Publisher(id, "NAME", "EMAIL")));
+        given(gateway.getById(id)).willReturn(Optional.of(Publisher.builder()
+                .id(id)
+                .name("NAME")
+                .contacts("EMAIL")
+                .status(Publisher.Status.ACTIVE)
+                .build())
+        );
 
         //when
         action.update(id, request);
 
         //then
-        verify(gateway).save(argThat(publisher ->
-                publisher.getId().equals(id) &&
-                publisher.getName().equals("NAME") &&
-                publisher.getContacts().equals("NEW_EMAIL"))
-        );
+        ArgumentCaptor<Publisher> captor = ArgumentCaptor.forClass(Publisher.class);
+        verify(gateway).save(captor.capture());
+        assertThat(captor.getValue()).satisfies(publisher -> {
+            assertThat(publisher.getName()).isEqualTo("NAME");
+            assertThat(publisher.getContacts()).isEqualTo("NEW_EMAIL");
+            assertThat(publisher.getStatus()).isEqualTo(Publisher.Status.INACTIVE);
+        });
     }
 
     @Test
     void update_returnsFlag_indicatingIfPublisherToUpdateExists() {
-        Publisher.Update request = new Publisher.Update("NEW_EMAIL");
+        Publisher.Update request = new Publisher.Update("NEW_EMAIL", Publisher.Status.ACTIVE);
 
         Publisher.Id id1 = new Publisher.Id(561253);
         Publisher.Id id2 = new Publisher.Id(428743);
@@ -146,6 +160,8 @@ public class UpdatePublishersTest {
 
 
     private static Publisher publisherWithId(long id) {
-        return new Publisher(new Publisher.Id(id), null, null);
+        return Publisher.builder()
+                .id(new Publisher.Id(id))
+                .build();
     }
 }

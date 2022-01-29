@@ -12,7 +12,7 @@ Requirements
     * delete +
 * Manage publishers advanced:
   * operations
-    * deactivation aka logical deletion
+    * deactivation aka logical deletion +
   * validation
     * publisher name should be unique on creation
     * publisher should be inactive on deletion
@@ -46,6 +46,11 @@ Requirements
   * increase stock for new arrivals and decrease for sales
   * extend search with another criteria:
     * by on-stock flag
+* Authorisation
+  * introduce roles
+    * admin  - full access
+    * editor - full access except deletion
+    * viewer - readonly access
 
 Non-functional requirements
 -----

@@ -1,5 +1,6 @@
 package com.github.twinra.infrastructure.api;
 
+import com.github.twinra.domain.model.Publisher;
 import com.github.twinra.infrastructure.api.dto.CreatePublisherDto;
 import com.github.twinra.infrastructure.api.dto.DataDto;
 import com.github.twinra.infrastructure.api.dto.PublisherDto;
@@ -38,15 +39,19 @@ public class PublishersControllerIntegrationTest extends ControllerIntegrationTe
     public void updatePublisherContactsById() {
         CreatePublisherDto createRequest = new CreatePublisherDto("THREE", "Address: Berlin, Alexander platz, 1");
         long id = createPublisher(createRequest);
+        PublisherDto publisher = getPublisherById(id);
 
         //when
-        UpdatePublisherDto updateRequest = new UpdatePublisherDto("Address: Frankfurt, Alexandra platz, 2");
+        UpdatePublisherDto updateRequest = new UpdatePublisherDto(
+                publisher.getContacts().replace("Berlin", "Spandau").replace("Alexander", "Alexandra"),
+                publisher.getStatus()
+        );
         updatePublisher(id, updateRequest);
 
         //then
-        assertThat(getPublisherById(id)).satisfies(publisher -> {
-            assertThat(publisher.getName()).isEqualTo(createRequest.getName());
-            assertThat(publisher.getContacts()).isEqualTo(updateRequest.getContacts());
+        assertThat(getPublisherById(id)).satisfies(p -> {
+            assertThat(p.getName()).isEqualTo(createRequest.getName());
+            assertThat(p.getContacts()).isEqualTo(updateRequest.getContacts());
         });
     }
 

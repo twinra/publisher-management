@@ -48,11 +48,21 @@ class PublishersService implements SearchPublishers, UpdatePublishers {
     }
 
     private static Publisher fromCreateRequest(Publisher.Create request) {
-        return new Publisher(null, request.getName(), request.getContacts());
+        return Publisher.builder()
+                .id(null)
+                .name(request.getName())
+                .contacts(request.getContacts())
+                .status(Publisher.Status.ACTIVE)
+                .build();
     }
 
     private static Publisher fromUpdateRequest(Publisher publisher, Publisher.Update request) {
-        return new Publisher(publisher.getId(), publisher.getName(), request.getContacts());
+        return Publisher.builder()
+                .id(publisher.getId())
+                .name(publisher.getName())
+                .contacts(request.getContacts())
+                .status(request.getStatus())
+                .build();
     }
 
 }

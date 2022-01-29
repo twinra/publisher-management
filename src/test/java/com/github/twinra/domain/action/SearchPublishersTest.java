@@ -32,7 +32,7 @@ class SearchPublishersTest {
     void findById_returnsPublisherFoundInGateway() {
         Publisher.Id id1 = new Publisher.Id(8710539);
         Publisher.Id id2 = new Publisher.Id(1260712);
-        Publisher publisher = new Publisher(id1, "NAME", "EMAIL");
+        Publisher publisher = newActivePublisher(id1, "NAME", "aaa@bbb.ccc");
 
         given(gateway.getById(id1)).willReturn(Optional.of(publisher));
         given(gateway.getById(id2)).willReturn(Optional.empty());
@@ -45,12 +45,21 @@ class SearchPublishersTest {
 
     @Test
     void findAll_returnsPublisherFoundInGateway() {
-        Publisher publisher1 = new Publisher(new Publisher.Id(1111), "NAME1", "EMAIL1");
-        Publisher publisher2 = new Publisher(new Publisher.Id(2222), "NAME2", "EMAIL2");
+        Publisher publisher1 = newActivePublisher(new Publisher.Id(1111), "NAME1", "noreply@name1.xyz");
+        Publisher publisher2 = newActivePublisher(new Publisher.Id(2222), "NAME2", "noreply@name2.xyz");
 
         given(gateway.getAll()).willReturn(List.of(publisher1, publisher2));
 
         //expect
         assertThat(action.findAll()).containsOnly(publisher2, publisher1);
+    }
+
+    private static Publisher newActivePublisher(Publisher.Id id, String name, String email) {
+        return Publisher.builder()
+                .id(id)
+                .name(name)
+                .contacts(email)
+                .status(Publisher.Status.ACTIVE)
+                .build();
     }
 }

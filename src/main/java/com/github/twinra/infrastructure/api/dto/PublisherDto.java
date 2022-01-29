@@ -14,8 +14,14 @@ public class PublisherDto {
     private Long id;
     private String name;
     private String contacts;
+    private Publisher.Status status;
 
     public static PublisherDto fromDomainObject(Publisher publisher) {
-        return new PublisherDto(publisher.getId().getValue(), publisher.getName(), publisher.getContacts());
+        return PublisherDto.builder()
+                .id(publisher.getId().getValue())
+                .name(publisher.getName())
+                .contacts(publisher.getContacts())
+                .status(publisher.getStatus())
+                .build();
     }
 }

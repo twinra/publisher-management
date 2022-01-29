@@ -13,8 +13,10 @@ import javax.validation.constraints.NotNull;
 public class UpdatePublisherDto {
     @NotNull
     private String contacts;
+    @NotNull
+    private Publisher.Status status;
 
     public Publisher.Update toDomainObject() {
-        return new Publisher.Update(contacts);
+        return new Publisher.Update(contacts, status);
     }
 }

@@ -8,7 +8,12 @@ import com.github.twinra.infrastructure.api.dto.DataDto;
 import com.github.twinra.infrastructure.api.dto.PublisherDto;
 import com.github.twinra.infrastructure.api.dto.UpdatePublisherDto;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +42,10 @@ public class PublishersController {
     }
 
     @GetMapping("/{id}")
+    @ApiResponses({
+            @ApiResponse(code=200, message = "Resource found"),
+            @ApiResponse(code=404, message = "Resource not found")
+    })
     public ResponseEntity<PublisherDto> getById(@PathVariable long id) {
         return searchPublishers.findById(new Publisher.Id(id))
                 .map(PublisherDto::fromDomainObject)
@@ -45,6 +54,12 @@ public class PublishersController {
     }
 
     @PostMapping
+    @ApiResponses({
+            @ApiResponse(code=201, message = "Resource created", responseHeaders = {
+                    @ResponseHeader(name = HttpHeaders.LOCATION, response = String.class)
+            })
+    })
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> create(@Valid @RequestBody CreatePublisherDto dto) {
         Publisher.Id savedId = updatePublishers.create(dto.toDomainObject());
         URI savedURI = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + savedId.getValue()).build().toUri();
@@ -52,6 +67,11 @@ public class PublishersController {
     }
 
     @PutMapping("/{id}")
+    @ApiResponses({
+            @ApiResponse(code=204, message = "Resource updated"),
+            @ApiResponse(code=404, message = "Resource not found")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> update(@PathVariable long id, @Valid @RequestBody UpdatePublisherDto dto) {
         boolean updated = updatePublishers.update(new Publisher.Id(id), dto.toDomainObject());
         return updated
@@ -60,6 +80,11 @@ public class PublishersController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiResponses({
+            @ApiResponse(code=204, message = "Resource deleted"),
+            @ApiResponse(code=404, message = "Resource not found")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable long id) {
         boolean deleted = updatePublishers.delete(new Publisher.Id(id));
         return deleted

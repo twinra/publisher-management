@@ -57,8 +57,8 @@ class PublishersControllerTest {
     @Test
     void getAll_returnsPublishers_providedByReader() {
         List<Publisher> publishers = List.of(
-                new Publisher(new Publisher.Id(123), "NAME", "EMAIL"),
-                new Publisher(new Publisher.Id(456), "ANOTHER_NAME", "ANOTHER_EMAIL")
+                newPublisher(123, "ABC", "EMAIL", Publisher.Status.ACTIVE),
+                newPublisher(456, "XYZ", "PHONE", Publisher.Status.INACTIVE)
         );
         given(reader.findAll()).willReturn(publishers);
 
@@ -71,7 +71,7 @@ class PublishersControllerTest {
 
     @Test
     void getById_returnsPublisher_foundByReader() {
-        Publisher foundPublisher = new Publisher(new Publisher.Id(id), "ACME", "noreply@acme.com");
+        Publisher foundPublisher = newPublisher(id, "ACME", "noreply@acme.com", Publisher.Status.ACTIVE);
         given(reader.findById(foundPublisher.getId())).willReturn(Optional.of(foundPublisher));
 
         //when
@@ -83,6 +83,7 @@ class PublishersControllerTest {
             assertThat(dto.getId()).isEqualTo(foundPublisher.getId().getValue());
             assertThat(dto.getName()).isEqualTo(foundPublisher.getName());
             assertThat(dto.getContacts()).isEqualTo(foundPublisher.getContacts());
+            assertThat(dto.getStatus()).isEqualTo(foundPublisher.getStatus());
         });
     }
 
@@ -117,7 +118,7 @@ class PublishersControllerTest {
 
     @Test
     void update_respondsNotFound_ifModifierDidNotFindObjectToUpdate() {
-        UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
+        UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa", Publisher.Status.ACTIVE);
 
         given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.Update.class))).willReturn(false);
 
@@ -131,7 +132,7 @@ class PublishersControllerTest {
 
     @Test
     void update_respondsNoContent_ifModifierHasFoundObjectToUpdate() {
-        UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa");
+        UpdatePublisherDto dto = new UpdatePublisherDto("aaa@aaa.aaa", Publisher.Status.INACTIVE);
 
         given(modifier.update(eq(new Publisher.Id(id)), any(Publisher.Update.class))).willReturn(true);
 
@@ -168,4 +169,12 @@ class PublishersControllerTest {
         assertThat(response.hasBody()).isFalse();
     }
 
+    private static Publisher newPublisher(long id, String name, String contacts, Publisher.Status status) {
+        return Publisher.builder()
+                .id(new Publisher.Id(id))
+                .name(name)
+                .contacts(contacts)
+                .status(status)
+                .build();
+    }
 }

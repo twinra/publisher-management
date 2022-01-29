@@ -48,8 +48,11 @@ public class InMemoryPublishersRepository implements PublishersGateway {
     }
 
     private Publisher generateIdIfEmpty(Publisher publisher) {
-        return publisher.getId() == null
-                ? new Publisher(generateNewId(), publisher.getName(), publisher.getContacts())
-                : publisher;
+        return publisher.getId() != null ? publisher : Publisher.builder()
+                .id(generateNewId())
+                .name(publisher.getName())
+                .contacts(publisher.getContacts())
+                .status(publisher.getStatus())
+                .build();
     }
 }
